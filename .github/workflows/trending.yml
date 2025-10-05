@@ -1,0 +1,37 @@
+name: Trending fetcher
+
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'force run'
+        required: false
+        default: '0'
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytrends requests
+
+      - name: Run fetch_trends.py
+        env:
+          HOSTINGER_PUSH_URL: ${{ secrets.HOSTINGER_PUSH_URL }}
+          TRENDING_AUTH_TOKEN: ${{ secrets.TRENDING_AUTH_TOKEN }}
+          # optional keys
+          X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
+          PERPLEXITY_KEY: ${{ secrets.PERPLEXITY_KEY }}
+          SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
+        run: |
+          python fetch_trends.py
